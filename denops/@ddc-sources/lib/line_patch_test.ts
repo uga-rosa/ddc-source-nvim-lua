@@ -1,4 +1,4 @@
-import { assertEquals, Denops, api, test } from "./deps.ts";
+import { api, assertEquals, Denops, test } from "./deps.ts";
 import { byteLength, linePatch } from "./line_patch.ts";
 
 // (1,0)-index, byte

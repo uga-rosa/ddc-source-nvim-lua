@@ -1,4 +1,4 @@
-import { assertEquals, Denops, api, test } from "./deps.ts";
+import { api, assertEquals, Denops, test } from "./deps.ts";
 import { LineContext } from "./line_context.ts";
 import { searchCursor } from "./line_patch_test.ts";
 
