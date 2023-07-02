@@ -1,4 +1,4 @@
-import { assertEquals, Denops, nvim, test } from "./deps.ts";
+import { assertEquals, Denops, api, test } from "./deps.ts";
 import { LineContext } from "./line_context.ts";
 import { searchCursor } from "./line_patch_test.ts";
 
@@ -8,8 +8,8 @@ async function setup(
 ) {
   const lines = [buffer];
   const { row, col } = searchCursor(lines, "");
-  await nvim.nvim_buf_set_lines(denops, 0, 0, -1, true, lines);
-  await nvim.nvim_win_set_cursor(denops, 0, [row, col]);
+  await api.nvim_buf_set_lines(denops, 0, 0, -1, true, lines);
+  await api.nvim_win_set_cursor(denops, 0, [row, col]);
 }
 
 test({

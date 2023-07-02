@@ -1,4 +1,4 @@
-import { assertEquals, Denops, nvim, test } from "./deps.ts";
+import { assertEquals, Denops, api, test } from "./deps.ts";
 import { byteLength, linePatch } from "./line_patch.ts";
 
 // (1,0)-index, byte
@@ -22,15 +22,15 @@ async function setup(
 ) {
   const lines = [buffer];
   const { row, col } = searchCursor(lines, "");
-  await nvim.nvim_buf_set_lines(denops, 0, 0, -1, true, lines);
-  await nvim.nvim_win_set_cursor(denops, 0, [row, col]);
+  await api.nvim_buf_set_lines(denops, 0, 0, -1, true, lines);
+  await api.nvim_win_set_cursor(denops, 0, [row, col]);
 }
 
 async function assertLine(
   denops: Denops,
   expectedLine: string,
 ) {
-  const actualLine = await nvim.nvim_get_current_line(denops);
+  const actualLine = await api.nvim_get_current_line(denops);
   assertEquals(actualLine, expectedLine);
 }
 
