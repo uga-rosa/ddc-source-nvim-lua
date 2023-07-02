@@ -70,14 +70,13 @@ export class Source extends BaseSource<Params> {
     userData,
   }: OnCompleteDoneArguments<Params, UserData>): Promise<void> {
     const name = userData.name;
-    if (userData.key_type === LuaType.string) {
-      if (!/\W/.test(name)) {
-        return;
-      }
-      const ctx = await LineContext.create(denops);
-      if (!ctx.text.slice(0, ctx.character).endsWith(name)) {
-        return;
-      }
+    // Check additional input
+    const ctx = await LineContext.create(denops);
+    if (!ctx.text.endsWith(name, ctx.character)) {
+      return;
+    }
+    if (userData.key_type === LuaType.string && !/\W/.test(name)) {
+      return;
     }
 
     const insertText = userData.key_type === LuaType.string
