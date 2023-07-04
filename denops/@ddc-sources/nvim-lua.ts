@@ -3,10 +3,10 @@ import {
   DdcGatherItems,
   GatherArguments,
   Item,
+  LineContext,
+  linePatch,
   OnCompleteDoneArguments,
 } from "./lib/deps.ts";
-import { LineContext } from "./lib/line_context.ts";
-import { linePatch } from "./lib/line_patch.ts";
 import { escapeString } from "./lib/strings.ts";
 
 const LuaType = {
