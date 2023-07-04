@@ -72,7 +72,7 @@ export class Source extends BaseSource<Params> {
     const name = userData.name;
     // Check additional input
     const ctx = await LineContext.create(denops);
-    if (!ctx.text.endsWith(name, ctx.character)) {
+    if (!ctx.text.endsWith(`.${name}`, ctx.character)) {
       return;
     }
     if (userData.key_type === LuaType.string && !/\W/.test(name)) {
