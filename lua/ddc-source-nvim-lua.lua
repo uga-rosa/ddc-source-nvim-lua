@@ -6,7 +6,7 @@ local M = {}
 ---@field menu? string
 ---@field info? string
 ---@field kind? string
----@field user_data? unknown
+---@field user_data? UserData
 ---@field highlights? PumHighlight[]
 ---@field columns? table<string, string>
 ---@field [1] string
@@ -17,6 +17,11 @@ local M = {}
 ---@field hl_group string
 ---@field col number
 ---@field width number
+
+---@class UserData
+---@field name string same as item.word
+---@field help_tag string
+---@field key_type string
 
 ---@generic T
 ---@param dst T[]
@@ -40,13 +45,15 @@ function M.items(parent)
     end
   end
 
+  local parent_s = table.concat(parent, ".")
+
   ---@type DdcItem[], DdcItem[]
   local before, after = {}, {}
   for _, key in ipairs(target_keys) do
     if type(key) == "string" and key:find("^%a[%a_]*$") then
-      table.insert(before, M.item(key, target[key]))
+      table.insert(before, M.item(key, target[key], parent_s))
     else
-      table.insert(after, M.item(key, target[key]))
+      table.insert(after, M.item(key, target[key], parent_s))
     end
   end
 
@@ -55,12 +62,22 @@ end
 
 ---@param key unknown
 ---@param value unknown
+---@param parent string
 ---@return DdcItem
-function M.item(key, value)
+function M.item(key, value, parent)
+  local word = tostring(key)
+  local help_tag = ""
+  if parent == "vim.api" then
+    help_tag = word
+  elseif vim.startswith(parent, "vim") then
+    help_tag = parent .. "." .. word
+  end
   return {
-    word = tostring(key),
+    word = word,
     kind = type(value),
     user_data = {
+      name = word,
+      help_tag = help_tag,
       key_type = type(key),
     },
   }

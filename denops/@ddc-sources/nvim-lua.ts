@@ -4,13 +4,18 @@ import {
   Denops,
   fn,
   GatherArguments,
-  Item,
+  Item as LackItem,
   LineContext,
   linePatch,
   OnCompleteDoneArguments,
 } from "./lib/deps.ts";
 import { escapeString } from "./lib/strings.ts";
 
+type SomeRequired<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>;
+
+type Item<T> = SomeRequired<LackItem<T>, "kind" | "user_data">;
+
+// :h luaref-type()
 const LuaType = {
   nil: "nil",
   number: "number",
@@ -49,34 +54,18 @@ export class Source extends BaseSource<Params> {
     if (path === undefined) {
       return [];
     }
-    const items = await this.getItems(denops, path);
-
-    return items.map((item) => {
-      const help_tag = path.startsWith("vim")
-        ? /vim\.(?:api|fn)/.test(path)
-          ? item.word
-          : [...path, item.word].join(".")
-        : "";
-      return {
-        ...item,
-        user_data: {
-          ...item.user_data,
-          name: item.word,
-          help_tag,
-        },
-      };
-    });
+    return await this.getItems(denops, path);
   }
 
   private async getItems(
     denops: Denops,
     path: string,
-  ): Promise<Item<Pick<UserData, "key_type">>[]> {
+  ): Promise<Item<UserData>[]> {
     if (path.startsWith("vim.fn.")) {
-      const funcName = path.slice(7);
+      const input = path.slice(7);
       const functions = await fn.getcompletion(
         denops,
-        funcName,
+        input,
         "function",
       ) as string[];
       return functions
@@ -86,6 +75,8 @@ export class Source extends BaseSource<Params> {
           word: func,
           kind: "function",
           user_data: {
+            name: func,
+            help_tag: func,
             key_type: "string",
           },
         }));
@@ -96,7 +87,7 @@ export class Source extends BaseSource<Params> {
         "luaeval",
         `require("ddc-source-nvim-lua").items(_A)`,
         parent,
-      ) as Item<Pick<UserData, "key_type">>[];
+      ) as Item<UserData>[];
     }
   }
 
