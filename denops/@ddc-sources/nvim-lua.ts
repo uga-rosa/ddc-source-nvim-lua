@@ -1,6 +1,7 @@
 import {
   BaseSource,
   DdcGatherItems,
+  fn,
   GatherArguments,
   Item,
   LineContext,
@@ -35,6 +36,13 @@ export class Source extends BaseSource<Params> {
     denops,
   }: GatherArguments<Params>): Promise<DdcGatherItems> {
     const ctx = await LineContext.create(denops);
+    if (
+      ctx.mode === "c" &&
+      await fn.getcmdtype(denops) === ":" &&
+      !/^\s*(?:lua|=)/.test(ctx.text)
+    ) {
+      return [];
+    }
     const [path] = ctx.text.slice(0, ctx.character).match(/\w[\w.]*$/) ?? [];
     if (path === undefined) {
       return [];
