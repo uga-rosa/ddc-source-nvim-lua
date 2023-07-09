@@ -1,6 +1,7 @@
 import {
   BaseSource,
   DdcGatherItems,
+  Denops,
   fn,
   GatherArguments,
   Item,
@@ -43,24 +44,18 @@ export class Source extends BaseSource<Params> {
     ) {
       return [];
     }
-    const [path] = ctx.text.slice(0, ctx.character).match(/\w[\w.]*$/) ?? [];
+    const beforeLine = ctx.text.slice(0, ctx.character);
+    const [path] = beforeLine.match(/\w[\w.]*$/) ?? [];
     if (path === undefined) {
       return [];
     }
-    const parent = path.split(".");
-    parent.pop();
-
-    const items = await denops.call(
-      "luaeval",
-      `require("ddc-source-nvim-lua").items(_A)`,
-      parent,
-    ) as Item<Pick<UserData, "key_type">>[];
+    const items = await this.getItems(denops, path);
 
     return items.map((item) => {
-      const help_tag = parent[0] === "vim"
-        ? parent[1] === "api" || parent[1] === "fn"
+      const help_tag = path.startsWith("vim")
+        ? /vim\.(?:api|fn)/.test(path)
           ? item.word
-          : [...parent, item.word].join(".")
+          : [...path, item.word].join(".")
         : "";
       return {
         ...item,
@@ -71,6 +66,38 @@ export class Source extends BaseSource<Params> {
         },
       };
     });
+  }
+
+  private async getItems(
+    denops: Denops,
+    path: string,
+  ): Promise<Item<Pick<UserData, "key_type">>[]> {
+    if (path.startsWith("vim.fn.")) {
+      const funcName = path.slice(7);
+      const functions = await fn.getcompletion(
+        denops,
+        funcName,
+        "function",
+      ) as string[];
+      return functions
+        .filter((func) => !func.startsWith("<SNR>"))
+        .map((func) => func.replace(/\(\)?$/, ""))
+        .map((func) => ({
+          word: func,
+          kind: "function",
+          user_data: {
+            key_type: "string",
+          },
+        }));
+    } else {
+      const parent = path.split(".");
+      parent.pop();
+      return await denops.call(
+        "luaeval",
+        `require("ddc-source-nvim-lua").items(_A)`,
+        parent,
+      ) as Item<Pick<UserData, "key_type">>[];
+    }
   }
 
   async onCompleteDone({
