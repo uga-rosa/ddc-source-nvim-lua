@@ -109,6 +109,8 @@ export class Source extends BaseSource<Params> {
       ? `["${escapeString(name)}"]`
       : `[${name}]`;
     await linePatch(denops, name.length + 1, 0, insertText);
+
+    await denops.call("ddc#skip_next_complete");
   }
 
   params(): Params {
