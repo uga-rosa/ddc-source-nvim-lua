@@ -1,3 +1,5 @@
+import { GetPreviewerArguments } from "https://deno.land/x/ddc_vim@v4.0.1/base/source.ts";
+import { Previewer } from "https://deno.land/x/ddc_vim@v4.0.1/types.ts";
 import {
   BaseSource,
   DdcGatherItems,
@@ -111,6 +113,18 @@ export class Source extends BaseSource<Params> {
     await linePatch(denops, name.length + 1, 0, insertText);
 
     await denops.call("ddc#skip_next_complete");
+  }
+
+  getPreviewer({
+    item,
+  }: GetPreviewerArguments<Params, UserData>): Previewer {
+    const userData = item.user_data;
+    if (userData === undefined) {
+      return { kind: "empty" };
+    }
+    const helpTag = userData.help_tag;
+    const command = `setlocal buftype=help | help ${helpTag}`;
+    return { kind: "command", command };
   }
 
   params(): Params {
