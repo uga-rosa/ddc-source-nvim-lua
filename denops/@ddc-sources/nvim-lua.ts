@@ -1,5 +1,5 @@
-import { GetPreviewerArguments } from "https://deno.land/x/ddc_vim@v4.0.1/base/source.ts";
-import { Previewer } from "https://deno.land/x/ddc_vim@v4.0.1/types.ts";
+import { GetPreviewerArguments } from "https://deno.land/x/ddc_vim@v4.0.4/base/source.ts";
+import { Previewer } from "https://deno.land/x/ddc_vim@v4.0.4/types.ts";
 import {
   BaseSource,
   DdcGatherItems,
@@ -122,9 +122,7 @@ export class Source extends BaseSource<Params> {
     if (userData === undefined) {
       return { kind: "empty" };
     }
-    const helpTag = userData.help_tag;
-    const command = `setlocal buftype=help | help ${helpTag}`;
-    return { kind: "command", command };
+    return { kind: "help", tag: userData.help_tag };
   }
 
   params(): Params {

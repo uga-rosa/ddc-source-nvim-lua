@@ -2,12 +2,12 @@ export {
   BaseSource,
   type DdcGatherItems,
   type Item,
-} from "https://deno.land/x/ddc_vim@v4.0.2/types.ts";
+} from "https://deno.land/x/ddc_vim@v4.0.4/types.ts";
 export {
   type GatherArguments,
   type OnCompleteDoneArguments,
-} from "https://deno.land/x/ddc_vim@v4.0.2/base/source.ts";
-export { type Denops, fn } from "https://deno.land/x/ddc_vim@v4.0.2/deps.ts";
+} from "https://deno.land/x/ddc_vim@v4.0.4/base/source.ts";
+export { type Denops, fn } from "https://deno.land/x/ddc_vim@v4.0.4/deps.ts";
 
 export * as api from "https://deno.land/x/denops_std@v5.0.1/function/nvim/mod.ts";
 
