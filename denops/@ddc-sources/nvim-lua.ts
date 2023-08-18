@@ -37,7 +37,7 @@ type UserData = {
   key_type: LuaType;
 };
 
-type Params = Record<never, never>;
+type Params = Record<PropertyKey, never>;
 
 export class Source extends BaseSource<Params> {
   async gather({
