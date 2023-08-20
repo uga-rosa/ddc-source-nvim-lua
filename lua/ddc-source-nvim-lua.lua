@@ -60,6 +60,18 @@ function M.items(parent)
   return list_extend(before, after)
 end
 
+---@param str string
+---@param ... string
+---@return boolean
+local function startswith(str, ...)
+  for _, pre in ipairs({ ... }) do
+    if vim.startswith(str, pre) then
+      return true
+    end
+  end
+  return false
+end
+
 ---@param key unknown
 ---@param value unknown
 ---@param parent string
@@ -69,7 +81,20 @@ function M.item(key, value, parent)
   local help_tag = ""
   if parent == "vim.api" then
     help_tag = word
-  elseif vim.startswith(parent, "vim") then
+  elseif
+    startswith(
+      parent,
+      "vim",
+      "coroutine",
+      "package",
+      "string",
+      "table",
+      "math",
+      "io",
+      "os",
+      "debug"
+    )
+  then
     help_tag = parent .. "." .. word
   end
   return {
