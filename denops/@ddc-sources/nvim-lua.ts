@@ -11,6 +11,7 @@ import {
   linePatch,
   OnCompleteDoneArguments,
 } from "./lib/deps.ts";
+import * as u from "https://deno.land/x/unknownutil@v3.4.0/mod.ts";
 import { escapeString } from "./lib/strings.ts";
 
 type SomeRequired<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>;
@@ -118,11 +119,13 @@ export class Source extends BaseSource<Params> {
   getPreviewer({
     item,
   }: GetPreviewerArguments<Params, UserData>): Previewer {
-    const userData = item.user_data;
-    if (userData === undefined) {
+    if (
+      u.isObjectOf({ user_data: u.isObjectOf({ help_tag: u.isString }) })(item)
+    ) {
+      return { kind: "help", tag: item.user_data.help_tag };
+    } else {
       return { kind: "empty" };
     }
-    return { kind: "help", tag: userData.help_tag };
   }
 
   params(): Params {
